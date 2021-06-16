@@ -1,0 +1,7 @@
+﻿################################################################################
+# This .gitignore file was automatically created by Microsoft(R) Visual Studio.
+################################################################################
+
+/Identity/obj
+/.vs/serve-docfx-net/v16
+/Identity/bin/Debug/netcoreapp3.1
