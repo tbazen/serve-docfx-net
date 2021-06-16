@@ -5,3 +5,5 @@
 /Identity/obj
 /.vs/serve-docfx-net/v16
 /Identity/bin/Debug/netcoreapp3.1
+/StaticSiteServer/bin/Debug/net5.0
+/StaticSiteServer/obj
