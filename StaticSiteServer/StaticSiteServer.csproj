@@ -2,7 +2,8 @@
 
   <PropertyGroup>
     <TargetFramework>net5.0</TargetFramework>
-    <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+	 <DocFXRoot>Docs\</DocFXRoot>
+	 <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
   </PropertyGroup>
 
   <ItemGroup>
@@ -10,5 +11,31 @@
     <PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.10.14" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="5.6.3" />
   </ItemGroup>
+
+
+	<ItemGroup>
+		<Content Remove="$(DocFXRoot)**" />
+		<None Remove="$(DocFXRoot)**" />
+		<None Include="$(DocFXRoot)**" Exclude="$(DocFXRoot)_site\**" />
+	</ItemGroup>
+	<Target Name="DebugEnsureDocFXEnv" BeforeTargets="Build" Condition=" '$(Configuration)' == 'Debug' And !Exists('$(DocFXRoot)node_modules') ">
+		<Exec Command="docfx --version" ContinueOnError="true">
+			<Output TaskParameter="ExitCode" PropertyName="ErrorCode" />
+		</Exec>
+		<Error Condition="'$(ErrorCode)' != '0'" Text="DocFX is required to build and run this project. To continue, please install DocFX from https://github.com/dotnet/docfx/releases, and then restart your command prompt or IDE." />
+		<Message Importance="high" Text="Generate static sites from Markdown and code files. This may take several minutes..." />
+		<Exec WorkingDirectory="$(DocFXRoot)" Command="docfx build" />
+	</Target>
+	<Target Name="PublishRunWebpack" AfterTargets="ComputeFilesToPublish">
+		<Exec WorkingDirectory="$(DocFXRoot)" Command="docfx build" />
+		<ItemGroup>
+			<DistFiles Include="$(DocFXRoot)_site\**" />
+			<ResolvedFileToPublish Include="@(DistFiles->'%(FullPath)')" Exclude="@(ResolvedFileToPublish)">
+				<RelativePath>%(DistFiles.Identity)</RelativePath>
+				<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+				<ExcludeFromSingleFile>true</ExcludeFromSingleFile>
+			</ResolvedFileToPublish>
+		</ItemGroup>
+	</Target>	
 
 </Project>
